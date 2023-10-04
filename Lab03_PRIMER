@@ -14,9 +14,9 @@ int main()
 	#pragma omp parallel private(time,tid)
 	{
 		tid = omp_get_thread_num();
+		time = omp_get_wtime();
 		for (int i=tid*part;i<(tid+1)*part;i++)
 		    res[tid]+=vec[i];
-		time = omp_get_wtime();
 		#pragma omp critical
 		    cout << "Thread:" << tid << " sum: " << res[tid]<< endl;
 		cout<< omp_get_wtime()-time << endl;
