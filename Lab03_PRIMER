@@ -1,0 +1,25 @@
+#include <iostream>       // std::cout
+#include <omp.h>
+#include <vector>
+using namespace std;
+const int P = 4;
+int main()
+{
+//measure execution time
+	int tid, time;
+	vector<int> vec(10000,1);
+	vector<int> res(P,0);
+	omp_set_num_threads(P);
+	int part=10000/P;
+	#pragma omp parallel private(time,tid)
+	{
+		tid = omp_get_thread_num();
+		for (int i=tid*part;i<(tid+1)*part;i++)
+		    res[tid]+=vec[i];
+		time = omp_get_wtime();
+		#pragma omp critical
+		    cout << "Thread:" << tid << " sum: " << res[tid]<< endl;
+		cout<< omp_get_wtime()-time << endl;
+	}
+	return 0;
+}
