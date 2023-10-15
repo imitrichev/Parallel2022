@@ -10,10 +10,10 @@ int main()
 	{
 		A[i]=i; B[i]=2*i;C[i]=0;
 	}
-	#pragma omp parallel shared (A,B,C) private (i,n,nums) num_threads(3)
+	#pragma omp parallel shared (A,B,C) private (i,n) firstprivate(nums) num_threads(3)
 	{
 		n = omp_get_thread_num();
-		#pragma omp for
+		#pragma omp for schedule(dynamic)
 		for (i=0;i<N;i++)
 		{
 			C[i]=A[i]+B[i];
@@ -26,3 +26,6 @@ int main()
 	}
 	return 0;
 }
+//0 done 292 iterations
+//2 done 421 iterations
+//1 done 287 iterations
