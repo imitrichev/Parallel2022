@@ -1,0 +1,52 @@
+#include <thread>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+//ii - thread number
+void threadCallback(vector<double> & v_double, int a, int b, int ii, vector<double> & sum)
+{
+    for (int i=a; i<b; i++)
+    {
+        sum[ii]+=v_double[i];
+    }
+}
+
+const int n=200000000;
+const int p=4;
+
+int main()
+{
+    vector<thread> vec;
+    
+    vector<double> v_d;
+    v_d.resize(n);
+    for (int i=0; i<n; i++)
+        v_d[i]=i;
+    int chunk=n/p;
+    vector<double> sums(p,0.0);
+    double sum=0.0;
+    
+    auto start = std::chrono::system_clock::now();
+
+    for (int i=0; i<p; i++)
+    {
+        int a=i*chunk,b=(i+1)*chunk;
+        if (i==p-1)
+            b=n;
+        vec.push_back(std::thread(threadCallback,std::ref(v_d),a,b,i,std::ref(sums)) );
+    }
+    
+    for (int i=0; i<p; i++)
+    {
+        vec[i].join();
+        sum+=sums[i];
+    }
+    /* do some work */
+
+    auto end = std::chrono::system_clock::now();
+    double elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
+    std::cout << elapsed << '\n';
+    std::cout<<"In Main Thread : sum = "<<sum<<std::endl;
+    return 0;
+}
